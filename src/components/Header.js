@@ -3,20 +3,13 @@ import Text from "../elements/Text";
 import { Button, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { getCookie, deleteCookie } from "../shared/Cookie";
+import { useSelector, useDispatch } from "react-redux";
+import { actionCreators as userActions } from "../redux/modules/user";
 
 const Header = (props) => {
   const classes = useStyles();
-  const [is_login, setIsLogin] = React.useState(false);
-
-  React.useEffect(() => {
-    let cookie = getCookie("user_id");
-    console.log(cookie);
-    if (cookie) {
-      setIsLogin(true);
-    } else {
-      setIsLogin(false);
-    }
-  });
+  const dispatch = useDispatch();
+  const is_login = useSelector((state) => state.user.is_login);
 
   if (is_login) {
     return (
@@ -33,7 +26,7 @@ const Header = (props) => {
             <Button
               className={classes.Button}
               onClick={() => {
-                deleteCookie("user_id");
+                dispatch(userActions.logOut({}));
               }}
             >
               로그아웃
@@ -53,8 +46,8 @@ const Header = (props) => {
           </Text>
         </Grid>
         <Grid className={classes.Grid}>
-          <Button className={classes.Button}>회원가입</Button>
-          <Button className={classes.Button}>로그인</Button>
+          <Button className={classes.Button2}>회원가입</Button>
+          <Button className={classes.Button2}>로그인</Button>
         </Grid>
       </Grid>
     </React.Fragment>
@@ -68,6 +61,7 @@ const useStyles = makeStyles({
     padding: "10px 40px",
   },
   Button: { width: "15vw" },
+  Button2: { width: "20vw" },
   Text: {
     marginRight: "20%",
   },

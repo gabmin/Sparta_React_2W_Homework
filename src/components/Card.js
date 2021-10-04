@@ -7,13 +7,13 @@ import { Button } from "@mui/material";
 const Card = (props) => {
   return (
     <React.Fragment>
-      <Grid>
+      <Grid is_flex>
         <Image shape="circle" src={props.src}></Image>
         <Text bold>{props.user_info.user_name}</Text>
+        <Button size="midium">수정</Button>
       </Grid>
       <Grid>
         <Text>귀여운 사모예드네요</Text>
-        <Button size="large">안녕</Button>
       </Grid>
       <Grid>
         <Image shape="rectangle" src={props.src}></Image>

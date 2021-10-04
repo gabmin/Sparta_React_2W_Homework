@@ -4,9 +4,12 @@ import Text from "../elements/Text";
 import { makeStyles } from "@mui/styles";
 import LoginIcon from "@mui/icons-material/Login";
 import { setCookie } from "../shared/Cookie";
+import { useDispatch } from "react-redux";
+import { actionCreators as userActions } from "../redux/modules/user";
 
 const LogIn = (props) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const [id, setId] = React.useState("");
   const [pwd, setPwd] = React.useState("");
@@ -18,8 +21,7 @@ const LogIn = (props) => {
     setPwd(e.target.value);
   };
   const login = () => {
-    setCookie("user_id", id, 3);
-    setCookie("user_pwd", pwd, 3);
+    dispatch(userActions.loginAction({ user_id: { changeId } }));
   };
 
   return (
