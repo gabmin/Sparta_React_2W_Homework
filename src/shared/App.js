@@ -1,6 +1,8 @@
 import "./App.css";
 import React from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
+import { history } from "../redux/confingStore";
+import { ConnectedRouter } from "connected-react-router";
 import MainPage from "../pages/MainPage";
 import Grid from "../elements/Grid";
 import LogIn from "../pages/LogIn";
@@ -12,11 +14,11 @@ function App() {
     <React.Fragment>
       <Grid isRoot>
         <Header></Header>
-        <BrowserRouter>
+        <ConnectedRouter history={history}>
           <Route path="/" exact component={MainPage} />
           <Route path="/login" exact component={LogIn} />
           <Route path="/signin" exact component={SignIn} />
-        </BrowserRouter>
+        </ConnectedRouter>
       </Grid>
     </React.Fragment>
   );
