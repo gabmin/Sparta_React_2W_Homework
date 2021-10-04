@@ -3,9 +3,24 @@ import React from "react";
 import Text from "../elements/Text";
 import { makeStyles } from "@mui/styles";
 import LoginIcon from "@mui/icons-material/Login";
+import { setCookie } from "../shared/Cookie";
 
 const LogIn = (props) => {
   const classes = useStyles();
+
+  const [id, setId] = React.useState("");
+  const [pwd, setPwd] = React.useState("");
+
+  const changeId = (e) => {
+    setId(e.target.value);
+  };
+  const changePwd = (e) => {
+    setPwd(e.target.value);
+  };
+  const login = () => {
+    setCookie("user_id", id, 3);
+    setCookie("user_pwd", pwd, 3);
+  };
 
   return (
     <React.Fragment>
@@ -20,6 +35,8 @@ const LogIn = (props) => {
           id="standard-basic"
           label="아이디"
           variant="standard"
+          value={id}
+          onChange={changeId}
         ></TextField>
       </Grid>
       <Grid margin="40px">
@@ -28,6 +45,8 @@ const LogIn = (props) => {
           id="standard-basic"
           label="비밀번호"
           variant="standard"
+          value={pwd}
+          onChange={changePwd}
         ></TextField>
       </Grid>
       <Grid margin="60px 30px">
@@ -35,6 +54,7 @@ const LogIn = (props) => {
           className={classes.Button}
           variant="contained"
           endIcon={<LoginIcon />}
+          onClick={login}
         >
           로그인하기
         </Button>
