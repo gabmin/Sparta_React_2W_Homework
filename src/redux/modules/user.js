@@ -2,7 +2,7 @@ import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
 import { setCookie, deleteCookie } from "../../shared/Cookie";
 import { auth } from "../../shared/firebase";
-
+import firebase from "firebase/app";
 // Action
 
 const LOG_OUT = "LOG_OUT";
@@ -35,10 +35,17 @@ const signinFB = (id, pwd, user_name) => {
 
       auth.currentUser
         .updateProfile({
-          displatName: user_name,
+          displayName: user_name,
         })
         .then(() => {
-          dispatch(setUser({ user_name: user_name, id: id, user_profile: "" }));
+          dispatch(
+            setUser({
+              user_name: user_name,
+              id: id,
+              user_profile: "",
+              uid: user.user.uid,
+            })
+          );
           history.push("/");
         })
         .catch((error) => {
@@ -47,7 +54,58 @@ const signinFB = (id, pwd, user_name) => {
     });
   };
 };
+const loginFB = (id, pwd) => {
+  return function (dispatch, getState, { history }) {
+    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then((res) => {
+      auth
+        .signInWithEmailAndPassword(id, pwd)
+        .then((user) => {
+          dispatch(
+            setUser({
+              user_name: user.user.displayName,
+              id: id,
+              user_profile: "",
+              uid: user.user.uid,
+            })
+          );
+          history.push("/");
+        })
+        .catch((error) => {
+          var errorCode = error.code;
+          var errorMessage = error.message;
 
+          console.log(errorCode, errorMessage);
+        });
+    });
+  };
+};
+
+const loginCheckFB = () => {
+  return function (dispatch, getState, { history }) {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        dispatch(
+          setUser({
+            user_name: user.displayName,
+            user_profile: "",
+            id: user.email,
+            uid: user.uid,
+          })
+        );
+      } else {
+        dispatch(logOut());
+      }
+    });
+  };
+};
+const logoutFB = () => {
+  return function (dispatch, getState, { history }) {
+    auth.signOut().then(() => {
+      dispatch(logOut());
+      history.push("/");
+    });
+  };
+};
 //reducer
 export default handleActions(
   {
@@ -71,9 +129,12 @@ export default handleActions(
 //Action Creators export
 const actionCreators = {
   signinFB,
+  loginFB,
   logOut,
   getUser,
   loginAction,
+  loginCheckFB,
+  logoutFB,
 };
 
 export { actionCreators };

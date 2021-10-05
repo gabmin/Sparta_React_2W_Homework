@@ -8,18 +8,21 @@ const Card = (props) => {
   return (
     <React.Fragment>
       <Grid is_flex>
-        <Image shape="circle" src={props.src}></Image>
+        <Image shape="circle" src={props.user_profile}></Image>
         <Text bold>{props.user_info.user_name}</Text>
-        <Button size="midium">수정</Button>
+        <Text>{props.insert_dt}</Text>
+        <Button size="midium" sx={{ color: "black" }}>
+          수정
+        </Button>
       </Grid>
       <Grid>
-        <Text>귀여운 사모예드네요</Text>
+        <Text>{props.contents}</Text>
+      </Grid>
+      <Grid width="auto">
+        <Image shape="rectangle" src={props.image_url}></Image>
       </Grid>
       <Grid>
-        <Image shape="rectangle" src={props.src}></Image>
-      </Grid>
-      <Grid>
-        <Text>좋아요 {props.like_cnt}</Text>
+        <Text>좋아요</Text>
         <Text>댓글 {props.comment_cnt}</Text>
       </Grid>
     </React.Fragment>

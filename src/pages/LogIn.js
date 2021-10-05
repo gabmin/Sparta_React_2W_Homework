@@ -3,7 +3,6 @@ import React from "react";
 import Text from "../elements/Text";
 import { makeStyles } from "@mui/styles";
 import LoginIcon from "@mui/icons-material/Login";
-import { setCookie } from "../shared/Cookie";
 import { useDispatch } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
 
@@ -21,7 +20,20 @@ const LogIn = (props) => {
     setPwd(e.target.value);
   };
   const login = () => {
-    dispatch(userActions.loginAction({ user_id: { changeId } }));
+    let _reg =
+      /^[0-9a-zA-Z]([-_.0-9a-zA-Z])*@[0-9a-zA-Z]([-_.0-9a-zA-Z])*.([a-zA-Z])*/;
+
+    const checkText = _reg.test(id);
+
+    if (!checkText) {
+      alert("이메일 형식이 아닙니다.");
+    }
+    if (id === "" || pwd === "") {
+      window.alert("아이디 혹은 비밀번호가 공란입니다! 입력해주세요!");
+      return;
+    }
+
+    dispatch(userActions.loginFB(id, pwd));
   };
 
   return (
@@ -46,6 +58,7 @@ const LogIn = (props) => {
           className={classes.TextField}
           id="standard-basic"
           label="비밀번호"
+          type="password"
           variant="standard"
           value={pwd}
           onChange={changePwd}
@@ -57,6 +70,7 @@ const LogIn = (props) => {
           variant="contained"
           endIcon={<LoginIcon />}
           onClick={login}
+          sx={{ backgroundColor: "black" }}
         >
           로그인하기
         </Button>

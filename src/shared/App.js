@@ -8,8 +8,27 @@ import Grid from "../elements/Grid";
 import LogIn from "../pages/LogIn";
 import SignIn from "../pages/SignIn";
 import Header from "../components/Header";
+import Permit from "./Permit";
+import { actionCreators as userActions } from "../redux/modules/user";
+import { useDispatch } from "react-redux";
+import { apiKey } from "./firebase";
+import { Fab } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import AddIcon from "@mui/icons-material/AddToPhotos";
+import PostWrite from "../pages/PostWrite";
 
 function App() {
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const _session_key = `firebase:authUser:${apiKey}:[DEFAULT]`;
+  const is_session = sessionStorage.getItem(_session_key) ? true : false;
+
+  React.useEffect(() => {
+    if (is_session) {
+      dispatch(userActions.loginCheckFB());
+    }
+  });
+
   return (
     <React.Fragment>
       <Grid isRoot>
@@ -18,10 +37,32 @@ function App() {
           <Route path="/" exact component={MainPage} />
           <Route path="/login" exact component={LogIn} />
           <Route path="/signin" exact component={SignIn} />
+          <Route path="/write" exact component={PostWrite} />
         </ConnectedRouter>
       </Grid>
+      <Permit>
+        <Fab
+          aria-label="add"
+          className={classes.button}
+          color="black"
+          onClick={() => {
+            history.push("/write");
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      </Permit>
     </React.Fragment>
   );
 }
+
+const useStyles = makeStyles({
+  button: {
+    position: "fixed",
+    right: "-400px",
+    bottom: "50px",
+    padding: "24px",
+  },
+});
 
 export default App;

@@ -50,6 +50,7 @@ const SignIn = (props) => {
           id="standard-basic"
           label="비밀번호"
           variant="standard"
+          type="password"
           onChange={(e) => {
             setPwd(e.target.value);
           }}
@@ -61,6 +62,7 @@ const SignIn = (props) => {
           id="standard-basic"
           label="비밀번호 확인"
           variant="standard"
+          type="password"
           onChange={(e) => {
             setPwdCheck(e.target.value);
           }}
@@ -71,12 +73,25 @@ const SignIn = (props) => {
           className={classes.Button}
           variant="contained"
           endIcon={<AssignmentIndIcon />}
+          sx={{ backgroundColor: "black" }}
           onClick={() => {
+            let _reg =
+              /^[0-9a-zA-Z]([-_.0-9a-zA-Z])*@[0-9a-zA-Z]([-_.0-9a-zA-Z])*.([a-zA-Z])*/;
+
+            const checkText = _reg.test(id);
+
             if (id === "" || pwd === "" || user_name === "") {
+              window.alert("모든 정보를 입력해주세요");
+              return;
+            }
+
+            if (!checkText) {
+              window.alert("이메일 형식이 아닙니다.");
               return;
             }
 
             if (pwd !== pwd_check) {
+              window.alert("패스워드가 같지 않습니다.");
               return;
             }
 
