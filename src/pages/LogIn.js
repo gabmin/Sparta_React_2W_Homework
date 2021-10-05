@@ -87,7 +87,6 @@ const useStyles = makeStyles({
   Button: {
     width: "90%",
     fontSize: "20px",
-    backgroundColor: "#17bb77",
   },
 });
 

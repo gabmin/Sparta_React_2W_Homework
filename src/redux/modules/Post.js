@@ -1,6 +1,7 @@
 import { createAction, handleActions } from "redux-actions";
 import produce from "immer";
 import { firestore } from "../../shared/firebase";
+import moment from "moment";
 
 //Action
 const SET_POST = "SET_POST";
@@ -13,6 +14,34 @@ const addPost = createAction(ADD_POST, (post) => ({ post }));
 //initialState
 const initialState = {
   list: [],
+};
+
+const addPostFB = (contents = "") => {
+  return function (dispatch, getState, { history }) {
+    const postDB = firestore.collection("Magazine");
+    //getState는 Store에 있는 정보를 가져온다
+    const _user = getState().user.user;
+    const user_info = {
+      user_name: _user.user_name,
+      user_id: _user.uid,
+      user_profile: _user.user_profile,
+    };
+    const _post = {
+      ...initialPost,
+      contents: contents,
+      insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
+    };
+
+    postDB
+      .add({ ...user_info, ..._post })
+      .then((doc) => {
+        let post = { user_info, ..._post, id: doc.id };
+        console.log(post);
+      })
+      .catch((err) => {
+        console.log("post 작성 실패!", err);
+      });
+  };
 };
 
 const getPostFB = () => {
@@ -34,11 +63,10 @@ const getPostFB = () => {
           contents: _post.contents,
           image_url: _post.image_url,
           comment_cnt: _post.comment_cnt,
-          imsert_dt: _post.insert_dt,
+          insert_dt: _post.insert_dt,
         };
         post_list.push(post);
       });
-      console.log(post_list);
       dispatch(setPost(post_list));
     });
   };
@@ -51,30 +79,28 @@ export default handleActions(
       produce(state, (draft) => {
         draft.list = action.payload.post_list;
       }),
-    [ADD_POST]: (state, action) => produce(state, (draft) => {}),
+    [ADD_POST]: (state, action) =>
+      produce(state, (draft) => {
+        draft.list.unshift(action.payload.post);
+      }),
   },
   initialState
 );
 
 const initialPost = {
-  user_info: {
-    id: 0,
-    user_name: "gabmin",
-    user_profile:
-      "https://t1.daumcdn.net/liveboard/HYPEBEAST/e18baa00daf5425ba12fff93d0cec4b4.JPG",
-  },
   image_url:
     "https://t1.daumcdn.net/liveboard/HYPEBEAST/e18baa00daf5425ba12fff93d0cec4b4.JPG",
-  contents: "조커이즈백",
+  contents: "",
   comment_cnt: 10,
   like_cnt: 4,
-  insert_dt: "2021-10-05 15:10:22",
+  insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
 };
 
 const actionCreators = {
   setPost,
   addPost,
   getPostFB,
+  addPostFB,
 };
 
 export { actionCreators };

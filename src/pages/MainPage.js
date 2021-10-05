@@ -7,8 +7,6 @@ const MainPage = (props) => {
   const post_list = useSelector((state) => state.post.list);
   const dispatch = useDispatch();
 
-  console.log(post_list);
-
   React.useEffect(() => {
     dispatch(postActions.getPostFB());
   }, []);

@@ -5,12 +5,20 @@ import Grid from "../elements/Grid";
 import { TextField, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import SaveIcon from "@mui/icons-material/Save";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { history } from "../redux/confingStore";
+import LoginIcon from "@mui/icons-material/Login";
+import { actionCreators as postActions } from "../redux/modules/Post";
 
 const PostWrite = (props) => {
   const is_login = useSelector((state) => state.user.is_login);
+  const dispatch = useDispatch();
   const classes = useStyles();
+  const [contents, setContents] = React.useState("");
+
+  const changeContents = (e) => {
+    setContents(e.target.value);
+  };
 
   if (!is_login) {
     return (
@@ -19,12 +27,17 @@ const PostWrite = (props) => {
           앗! 잠깐!
         </Text>
         <Text size="16px">로그인 후에만 글을 쓸 수 있어요!</Text>
+
         <Button
-          _onClick={() => {
+          className={classes.Button}
+          variant="contained"
+          endIcon={<LoginIcon />}
+          onClick={() => {
             history.replace("/login");
           }}
+          sx={{ backgroundColor: "black" }}
         >
-          로그인 하러가기
+          로그인하기
         </Button>
       </Grid>
     );
@@ -54,6 +67,7 @@ const PostWrite = (props) => {
           rows={5}
           placeholder="내용을 입력하세요"
           sx={{ width: "90%", m: "5vw" }}
+          onChange={changeContents}
         />
       </Grid>
       <Grid margin="0px 5vw">
@@ -62,6 +76,10 @@ const PostWrite = (props) => {
           variant="contained"
           endIcon={<SaveIcon />}
           sx={{ backgroundColor: "black" }}
+          onClick={() => {
+            dispatch(postActions.addPostFB(contents));
+            history.replace("/");
+          }}
         >
           저장하기
         </Button>
