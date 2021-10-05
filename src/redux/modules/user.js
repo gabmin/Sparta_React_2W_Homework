@@ -1,14 +1,16 @@
 import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
 import { setCookie, deleteCookie } from "../../shared/Cookie";
+import { auth } from "../../shared/firebase";
 
 // Action
-const LOG_IN = "LOG_IN";
+
 const LOG_OUT = "LOG_OUT";
 const GET_USER = "GET_USER";
+const SET_USER = "SET_USER";
 
 //Action Creator
-const logIn = createAction(LOG_IN, (user) => ({ user }));
+const setUser = createAction(SET_USER, (user) => ({ user }));
 const logOut = createAction(LOG_OUT, (user) => ({ user }));
 const getUser = createAction(GET_USER, (user) => ({ user }));
 
@@ -22,15 +24,34 @@ const InitialState = {
 //middleware actions
 const loginAction = (user) => {
   return function (dispatch, getState, { history }) {
-    dispatch(logIn(user));
+    dispatch(setUser(user));
     history.push("/");
+  };
+};
+const signinFB = (id, pwd, user_name) => {
+  return function (dispatch, getState, { history }) {
+    auth.createUserWithEmailAndPassword(id, pwd).then((user) => {
+      console.log(user);
+
+      auth.currentUser
+        .updateProfile({
+          displatName: user_name,
+        })
+        .then(() => {
+          dispatch(setUser({ user_name: user_name, id: id, user_profile: "" }));
+          history.push("/");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
   };
 };
 
 //reducer
 export default handleActions(
   {
-    [LOG_IN]: (state, action) =>
+    [SET_USER]: (state, action) =>
       produce(state, (draft) => {
         setCookie("is_login", "success");
         draft.user = action.payload.user;
@@ -49,7 +70,7 @@ export default handleActions(
 
 //Action Creators export
 const actionCreators = {
-  logIn,
+  signinFB,
   logOut,
   getUser,
   loginAction,
