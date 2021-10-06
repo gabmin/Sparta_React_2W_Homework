@@ -2,6 +2,7 @@ import React from "react";
 import Text from "../elements/Text";
 import Image from "../elements/Image";
 import Grid from "../elements/Grid";
+import Upload from "../elements/Upload";
 import { TextField, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import SaveIcon from "@mui/icons-material/Save";
@@ -12,6 +13,7 @@ import { actionCreators as postActions } from "../redux/modules/Post";
 
 const PostWrite = (props) => {
   const is_login = useSelector((state) => state.user.is_login);
+  const preview = useSelector((state) => state.image.preview);
   const dispatch = useDispatch();
   const classes = useStyles();
   const [contents, setContents] = React.useState("");
@@ -49,7 +51,7 @@ const PostWrite = (props) => {
         <Text size="32px" bold>
           게시글 작성
         </Text>
-        <input type="file"></input>
+        <Upload></Upload>
       </Grid>
       <Grid margin="20px">
         <Text size="20px" bold>
@@ -57,7 +59,10 @@ const PostWrite = (props) => {
         </Text>
       </Grid>
       <Grid>
-        <Image shape="rectangle"></Image>
+        <Image
+          shape="rectangle"
+          src={preview ? preview : "http://via.placeholder.com/400x300"}
+        ></Image>
       </Grid>
       <Grid>
         <TextField
