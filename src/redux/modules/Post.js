@@ -8,20 +8,28 @@ import { actionCreators as imageActions } from "./Image";
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
 const EDIT_POST = "EDIT_POST";
+const LOADING = "LOADING";
 
 //Action Creators
-const setPost = createAction(SET_POST, (post_list) => ({ post_list }));
+const setPost = createAction(SET_POST, (post_list, paging) => ({
+  post_list,
+  paging,
+}));
 const addPost = createAction(ADD_POST, (post) => ({ post }));
 const editPost = createAction(EDIT_POST, (post_id, post) => ({
   post_id,
   post,
 }));
+const loading = createAction(LOADING, (is_loading) => ({ is_loading }));
 
 //initialState
 const initialState = {
   list: [],
+  paging: { start: null, next: null, size: 3 },
+  is_loading: false,
 };
 
+//게시글 가져오기
 const addPostFB = (contents = "") => {
   return function (dispatch, getState, { history }) {
     const postDB = firestore.collection("Magazine");
@@ -73,34 +81,61 @@ const addPostFB = (contents = "") => {
   };
 };
 
-const getPostFB = () => {
+// 게시글 불러오기
+const getPostFB = (start = null, size = 3) => {
   return function (dispatch, getState, { history }) {
+    //Paging 정보 가져오기
+    let _paging = getState().post.paging;
+    // 시작은 했는데 다음에 가져올 데이터가 없을 경우 리턴
+    if (_paging.start && !_paging.next) {
+      return;
+    }
+
+    dispatch(loading(true));
     const postDB = firestore.collection("Magazine");
 
-    postDB.get().then((docs) => {
-      let post_list = [];
+    let query = postDB.orderBy("insert_dt", "desc");
+    if (start) {
+      query = query.startAt(start);
+    }
 
-      docs.forEach((doc) => {
-        let _post = doc.data();
-        let post = {
-          id: doc.id,
-          user_info: {
-            user_name: _post.user_name,
-            user_profile: _post.user_profile,
-            user_id: _post.user_id,
-          },
-          contents: _post.contents,
-          image_url: _post.image_url,
-          comment_cnt: _post.comment_cnt,
-          insert_dt: _post.insert_dt,
+    query
+      .limit(size + 1)
+      .get()
+      .then((docs) => {
+        let post_list = [];
+        let paging = {
+          start: docs.docs[0],
+          next:
+            docs.docs.length === size + 1
+              ? docs.docs[docs.docs.length - 1]
+              : null,
+          size: size,
         };
-        post_list.push(post);
+
+        docs.forEach((doc) => {
+          let _post = doc.data();
+          let post = {
+            id: doc.id,
+            user_info: {
+              user_name: _post.user_name,
+              user_profile: _post.user_profile,
+              user_id: _post.user_id,
+            },
+            contents: _post.contents,
+            image_url: _post.image_url,
+            comment_cnt: _post.comment_cnt,
+            insert_dt: _post.insert_dt,
+          };
+          post_list.push(post);
+        });
+        post_list.pop();
+        dispatch(setPost(post_list, paging));
       });
-      dispatch(setPost(post_list));
-    });
   };
 };
 
+// 게시글 수정하기
 const editPostFB = (post_id = null, post = {}) => {
   return function (dispatch, getState, { history }) {
     if (!post_id) {
@@ -157,7 +192,9 @@ export default handleActions(
   {
     [SET_POST]: (state, action) =>
       produce(state, (draft) => {
-        draft.list = action.payload.post_list;
+        draft.list.push(...action.payload.post_list);
+        draft.paging = action.payload.paging;
+        draft.is_loading = false;
       }),
     [ADD_POST]: (state, action) =>
       produce(state, (draft) => {
@@ -167,6 +204,10 @@ export default handleActions(
       produce(state, (draft) => {
         let idx = draft.list.findIndex((p) => p.id === action.payload.post_id);
         draft.list[idx] = { ...draft.list[idx], ...action.payload.post };
+      }),
+    [LOADING]: (state, action) =>
+      produce(state, (draft) => {
+        draft.is_loading = action.payload.is_loading;
       }),
   },
   initialState
