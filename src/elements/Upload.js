@@ -1,6 +1,4 @@
 import React from "react";
-import SaveIcon from "@mui/icons-material/Save";
-import { IconButton } from "@mui/material";
 import { actionCreators as imageActions } from "../redux/modules/Image";
 import { useDispatch, useSelector } from "react-redux";
 

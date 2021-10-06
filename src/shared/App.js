@@ -7,6 +7,7 @@ import MainPage from "../pages/MainPage";
 import Grid from "../elements/Grid";
 import LogIn from "../pages/LogIn";
 import SignIn from "../pages/SignIn";
+import Notification from "../pages/Notification";
 import Header from "../components/Header";
 import Permit from "./Permit";
 import { actionCreators as userActions } from "../redux/modules/user";
@@ -38,6 +39,8 @@ function App() {
           <Route path="/login" exact component={LogIn} />
           <Route path="/signin" exact component={SignIn} />
           <Route path="/write" exact component={PostWrite} />
+          <Route path="/write/:id" exact component={PostWrite} />
+          <Route path="/noti" exact component={Notification} />
         </ConnectedRouter>
       </Grid>
       <Permit>
@@ -45,6 +48,7 @@ function App() {
           aria-label="add"
           className={classes.button}
           color="black"
+          sx={{ position: "fixed", backgroundColor: "#FFCF94" }}
           onClick={() => {
             history.push("/write");
           }}
@@ -58,9 +62,8 @@ function App() {
 
 const useStyles = makeStyles({
   button: {
-    position: "fixed",
-    right: "-400px",
-    bottom: "50px",
+    right: "7%",
+    bottom: "10%",
     padding: "24px",
   },
 });

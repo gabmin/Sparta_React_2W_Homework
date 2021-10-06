@@ -24,7 +24,13 @@ const Header = (props) => {
             <Button className={classes.Button} sx={{ color: "black" }}>
               내정보
             </Button>
-            <Button className={classes.Button} sx={{ color: "black" }}>
+            <Button
+              className={classes.Button}
+              sx={{ color: "black" }}
+              onClick={() => {
+                history.push("/noti");
+              }}
+            >
               알림
             </Button>
             <Button
