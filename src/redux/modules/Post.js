@@ -135,6 +135,31 @@ const getPostFB = (start = null, size = 3) => {
   };
 };
 
+const getOnePostFB = (id) => {
+  return function (dispatch, getState, { history }) {
+    const postDB = firestore.collection("Magazine");
+    postDB
+      .doc(id)
+      .get()
+      .then((doc) => {
+        let _post = doc.data();
+        let post = {
+          id: doc.id,
+          user_info: {
+            user_name: _post.user_name,
+            user_profile: _post.user_profile,
+            user_id: _post.user_id,
+          },
+          contents: _post.contents,
+          image_url: _post.image_url,
+          comment_cnt: _post.comment_cnt,
+          insert_dt: _post.insert_dt,
+        };
+        dispatch(setPost([post]));
+      });
+  };
+};
+
 // 게시글 수정하기
 const editPostFB = (post_id = null, post = {}) => {
   return function (dispatch, getState, { history }) {
@@ -193,7 +218,19 @@ export default handleActions(
     [SET_POST]: (state, action) =>
       produce(state, (draft) => {
         draft.list.push(...action.payload.post_list);
-        draft.paging = action.payload.paging;
+        //중복값 제거 (acc 누적계산된 값, cur 현재 값)
+        draft.list = draft.list.reduce((acc, cur) => {
+          if (acc.findIndex((a) => (a.id === cur.id) === -1)) {
+            return [...acc, cur];
+          } else {
+            acc[acc.findIndex((a) => (a.id === cur.id) === -1)] = cur;
+            return acc;
+          }
+        }, []);
+
+        if (action.payload.paging) {
+          draft.paging = action.payload.paging;
+        }
         draft.is_loading = false;
       }),
     [ADD_POST]: (state, action) =>
@@ -217,8 +254,8 @@ const initialPost = {
   image_url:
     "https://t1.daumcdn.net/liveboard/HYPEBEAST/e18baa00daf5425ba12fff93d0cec4b4.JPG",
   contents: "",
-  comment_cnt: 10,
-  like_cnt: 4,
+  comment_cnt: 0,
+  like_cnt: 0,
   insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
 };
 
@@ -229,6 +266,7 @@ const actionCreators = {
   addPostFB,
   editPost,
   editPostFB,
+  getOnePostFB,
 };
 
 export { actionCreators };

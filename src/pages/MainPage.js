@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import Card from "../components/Card";
 import { actionCreators as postActions } from "../redux/modules/Post";
 import InfinityScroll from "../shared/InfinityScroll";
+import { history } from "../redux/confingStore";
+import { Grid } from "@mui/material";
 
 const MainPage = (props) => {
   const post_list = useSelector((state) => state.post.list);
@@ -12,7 +14,7 @@ const MainPage = (props) => {
   const paging = useSelector((state) => state.post.paging);
 
   React.useEffect(() => {
-    if (post_list.length === 0) {
+    if (post_list.length < 2) {
       dispatch(postActions.getPostFB());
     }
   }, []);
@@ -28,9 +30,27 @@ const MainPage = (props) => {
       >
         {post_list.map((p, idx) => {
           if (p.user_info.user_id === user_info?.uid) {
-            return <Card key={p.id} {...p} is_me />;
+            return (
+              <Grid
+                key={p.id}
+                onClick={() => {
+                  history.push(`/cmt/${p.id}`);
+                }}
+              >
+                <Card key={p.id} {...p} is_me />
+              </Grid>
+            );
           } else {
-            return <Card key={p.id} {...p} />;
+            return (
+              <Grid
+                key={p.id}
+                onClick={() => {
+                  history.push(`/cmt/${p.id}`);
+                }}
+              >
+                <Card key={p.id} {...p} />
+              </Grid>
+            );
           }
         })}
       </InfinityScroll>

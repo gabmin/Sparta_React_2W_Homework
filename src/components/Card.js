@@ -4,11 +4,15 @@ import Image from "../elements/Image";
 import Text from "../elements/Text";
 import { Button } from "@mui/material";
 import { history } from "../redux/confingStore";
+import { useSelector } from "react-redux";
 
 const Card = (props) => {
+  const post_list = useSelector((state) => state.comment.contents);
+
+  console.log(post_list);
   return (
     <React.Fragment>
-      <Grid is_flex width="90vw">
+      <Grid is_flex width="90vw" margin="10px">
         <Grid is_flex margin="0px 35% 0px 0px">
           <Image shape="circle" src={props.user_profile}></Image>
           <Text bold>{props.user_info.user_name}</Text>
@@ -34,9 +38,11 @@ const Card = (props) => {
       <Grid width="auto">
         <Image shape="rectangle" src={props.image_url}></Image>
       </Grid>
-      <Grid is_flex>
-        <Text>좋아요{props.like_cnt}</Text>
-        <Text>댓글 {props.comment_cnt}</Text>
+      <Grid margin="0px 10px" is_flex width="100vw">
+        <Grid>
+          <Text>좋아요 {props.like_cnt}</Text>
+          <Text>댓글 {props.comment_cnt}</Text>
+        </Grid>
       </Grid>
     </React.Fragment>
   );
@@ -44,13 +50,14 @@ const Card = (props) => {
 
 Card.defaultProps = {
   user_info: {
-    user_name: "Gabmin",
+    user_name: "",
     user_profile: "",
+    user_id: "",
   },
   image_url: "",
-  contents: "안녕하세여",
-  comment_cnt: "4",
-  like_cnt: "10",
+  contents: "",
+  comment_cnt: "0",
+  like_cnt: "0",
   insert_dt: "2021-10-10 10:00:00",
   is_me: false,
 };

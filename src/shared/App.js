@@ -7,6 +7,7 @@ import MainPage from "../pages/MainPage";
 import Grid from "../elements/Grid";
 import LogIn from "../pages/LogIn";
 import SignIn from "../pages/SignIn";
+import Detail from "../pages/Detail";
 import Notification from "../pages/Notification";
 import Header from "../components/Header";
 import Permit from "./Permit";
@@ -40,6 +41,7 @@ function App() {
           <Route path="/signin" exact component={SignIn} />
           <Route path="/write" exact component={PostWrite} />
           <Route path="/write/:id" exact component={PostWrite} />
+          <Route path="/cmt/:id" exact component={Detail} />
           <Route path="/noti" exact component={Notification} />
         </ConnectedRouter>
       </Grid>
