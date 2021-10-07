@@ -51,6 +51,11 @@ const LogIn = (props) => {
           variant="standard"
           value={id}
           onChange={changeId}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              login();
+            }
+          }}
         ></TextField>
       </Grid>
       <Grid margin="40px">
@@ -62,6 +67,11 @@ const LogIn = (props) => {
           variant="standard"
           value={pwd}
           onChange={changePwd}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              login();
+            }
+          }}
         ></TextField>
       </Grid>
       <Grid margin="60px 30px">

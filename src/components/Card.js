@@ -2,18 +2,21 @@ import React from "react";
 import Grid from "../elements/Grid";
 import Image from "../elements/Image";
 import Text from "../elements/Text";
+import styled from "styled-components";
 import { Button } from "@mui/material";
 import { history } from "../redux/confingStore";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import Likes from "./likes";
+import { actionCreators as postActions } from "../redux/modules/Post";
 
-const Card = (props) => {
-  const post_list = useSelector((state) => state.comment.contents);
+const Card = React.memo((props) => {
+  const dispatch = useDispatch();
+  console.log(props);
 
-  console.log(post_list);
   return (
     <React.Fragment>
-      <Grid is_flex width="90vw" margin="10px">
-        <Grid is_flex margin="0px 35% 0px 0px">
+      <Grid is_flex width="88vw" margin="10px">
+        <Grid is_flex margin="0px 28% 0px 0px">
           <Image shape="circle" src={props.user_profile}></Image>
           <Text bold>{props.user_info.user_name}</Text>
         </Grid>
@@ -30,6 +33,19 @@ const Card = (props) => {
               수정
             </Button>
           )}
+          {props.is_me && (
+            <Button
+              size="midium"
+              sx={{ color: "black", padding: "0px" }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dispatch(postActions.deletePostFB(props.id));
+              }}
+            >
+              삭제하기
+            </Button>
+          )}
         </Grid>
       </Grid>
       <Grid margin="25px 10px">
@@ -39,14 +55,26 @@ const Card = (props) => {
         <Image shape="rectangle" src={props.image_url}></Image>
       </Grid>
       <Grid margin="0px 10px" is_flex width="100vw">
-        <Grid>
-          <Text>좋아요 {props.like_cnt}</Text>
-          <Text>댓글 {props.comment_cnt}</Text>
-        </Grid>
+        <Likey>
+          <Grid>
+            <Likes
+              onClick={() => {
+                dispatch(postActions.toggleLikeFB(props.id));
+              }}
+              is_like={props.is_like}
+            />
+          </Grid>
+          <Grid width="200px" margin="0px -20px 0px -60px">
+            <Text>좋아요 {props.like_cnt}개</Text>
+          </Grid>
+          <Grid>
+            <Text>댓글 {props.comment_cnt}개</Text>
+          </Grid>
+        </Likey>
       </Grid>
     </React.Fragment>
   );
-};
+});
 
 Card.defaultProps = {
   user_info: {
@@ -57,9 +85,15 @@ Card.defaultProps = {
   image_url: "",
   contents: "",
   comment_cnt: "0",
-  like_cnt: "0",
+  like_cnt: 10,
   insert_dt: "2021-10-10 10:00:00",
+  is_like: false,
   is_me: false,
 };
 
+const Likey = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
 export default Card;
