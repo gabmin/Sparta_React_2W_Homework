@@ -5,6 +5,7 @@ import { makeStyles } from "@mui/styles";
 import { useSelector, useDispatch } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
 import { history } from "../redux/confingStore";
+import NotiBadge from "./Notibadge";
 
 const Header = (props) => {
   const classes = useStyles();
@@ -15,7 +16,12 @@ const Header = (props) => {
     return (
       <React.Fragment>
         <Grid className={classes.Grid}>
-          <Grid className={classes.Text}>
+          <Grid
+            className={classes.Text}
+            onClick={() => {
+              history.push("/");
+            }}
+          >
             <Text bold size="20px">
               Universe
             </Text>
@@ -33,6 +39,11 @@ const Header = (props) => {
             >
               알림
             </Button>
+            <NotiBadge
+              onClick={() => {
+                history.push("/noti");
+              }}
+            ></NotiBadge>
             <Button
               className={classes.Button}
               sx={{ color: "black" }}

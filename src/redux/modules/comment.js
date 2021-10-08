@@ -1,6 +1,6 @@
 import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
-import { firestore } from "../../shared/firebase";
+import { firestore, realtime } from "../../shared/firebase";
 import "moment";
 import moment from "moment";
 import firebase from "firebase";
@@ -59,6 +59,25 @@ const addCommentFB = (post_id, contents) => {
               postActions.editPost(post_id, {
                 comment_cnt: parseInt(post.comment_cnt) + 1,
               })
+            );
+            const _noti_item = realtime
+              .ref(`noti/${post.user_info.user_id}/list`)
+              .push();
+            _noti_item.set(
+              {
+                post_id: post.id,
+                user_name: comment.user_name,
+                image_url: post.image_url,
+                insert_dt: comment.insert_dt,
+              },
+              (err) => {
+                if (err) {
+                  console.log("에러발생");
+                } else {
+                  const notiDB = realtime.ref(`noti/${post.user_info.user_id}`);
+                  notiDB.update({ read: false });
+                }
+              }
             );
           }
         });
